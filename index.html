@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Угадай мелодию · Dorksense стиль</title>
-    <!-- Шрифт, похожий на предыдущий, но более читаемый для старшего возраста -->
+    <title>Угадай мелодию · Голосовые сообщения</title>
+    <!-- Читаемый шрифт -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -37,7 +37,7 @@
             text-transform: uppercase;
         }
 
-        /* Кнопка в стиле dork (большая, контрастная) */
+        /* Кнопка старта / повторной игры */
         .big-button {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
@@ -68,7 +68,7 @@
             filter: grayscale(0.6);
         }
 
-        /* Карточка игры (один трек) */
+        /* Карточка трека */
         .game-card {
             width: 100%;
             max-width: 950px;
@@ -81,15 +81,15 @@
         }
 
         .track-title {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             color: #FFD700;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
             text-align: center;
             text-transform: uppercase;
             text-shadow: 0 0 8px orange;
         }
 
-        /* Стиль голосового сообщения (Telegram-like) */
+        /* Стиль голосового сообщения (Telegram-стиль) */
         .voice-message {
             background: #2a2f40;
             border-radius: 60px;
@@ -112,13 +112,14 @@
             border: none;
             border-radius: 50px;
             padding: 1rem 2.5rem;
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 700;
             color: #0a0f1e;
             cursor: pointer;
             box-shadow: 0 0 15px gold;
             transition: 0.2s;
             border: 2px solid white;
+            min-width: 140px;
         }
 
         .play-button:hover {
@@ -132,7 +133,7 @@
         }
 
         .timer {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 900;
             color: #FFD700;
             text-shadow: 0 0 10px red;
@@ -140,97 +141,30 @@
             padding: 0.5rem 1.5rem;
             border-radius: 40px;
             border: 3px solid #FFD700;
+            margin-left: auto;
+            font-variant-numeric: tabular-nums;
         }
 
-        .hint-button {
-            background: transparent;
-            border: 3px solid #FFD700;
-            border-radius: 50px;
-            padding: 1rem 2rem;
-            font-size: 1.6rem;
-            color: #FFD700;
-            cursor: pointer;
-            font-weight: 700;
-            transition: 0.2s;
-        }
-
-        .hint-button:hover:not(:disabled) {
-            background: #FFD70022;
-            border-color: #FFA500;
-        }
-
-        .hint-button:disabled {
-            opacity: 0.3;
-            border-color: gray;
-        }
-
-        /* Варианты ответов (кнопки) */
-        .answers-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin: 2.5rem 0 1.5rem;
-        }
-
-        .answer-btn {
-            background: #0a0f1e;
-            border: 4px solid #FFD700;
-            border-radius: 40px;
-            padding: 1.5rem 1rem;
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-            text-align: center;
-            line-height: 1.3;
-            box-shadow: 0 0 10px gold;
-        }
-
-        .answer-btn:hover:not(:disabled) {
-            background: #FFD70022;
-            border-color: #FFA500;
-            transform: scale(1.02);
-        }
-
-        .answer-btn.correct-guess {
-            background: #00cc66;
-            border-color: #00ff00;
-            box-shadow: 0 0 20px #00ff00;
-        }
-
-        .answer-btn.wrong-guess {
-            background: #cc3300;
-            border-color: #ff3300;
-            opacity: 0.7;
-        }
-
-        .answer-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
+        /* Кнопка следующего трека */
         .next-button {
             background: #FFD700;
             border: none;
             border-radius: 50px;
             padding: 1.5rem 3rem;
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: #0a0f1e;
             cursor: pointer;
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             box-shadow: 0 0 20px gold;
             width: 100%;
             border: 3px solid white;
+            transition: 0.2s;
         }
 
-        .score-board {
-            font-size: 2.2rem;
-            color: #FFD700;
-            text-align: center;
-            margin-top: 2rem;
-            text-shadow: 0 0 8px cyan;
+        .next-button:hover {
+            background: #FFA500;
+            transform: scale(1.02);
         }
 
         .footer {
@@ -239,73 +173,63 @@
             font-size: 1.2rem;
         }
 
-        /* Адаптация */
+        /* Адаптация под мобильные, но шрифты остаются крупными */
         @media (max-width: 700px) {
             h1 { font-size: 2.5rem; }
             .big-button { font-size: 1.5rem; padding: 15px 30px; }
             .game-card { padding: 1.5rem; }
-            .track-title { font-size: 1.4rem; }
+            .track-title { font-size: 1.8rem; }
             .voice-message { flex-wrap: wrap; justify-content: center; }
-            .play-button { font-size: 1.5rem; padding: 0.8rem 1.5rem; }
-            .timer { font-size: 2rem; }
-            .answers-grid { grid-template-columns: 1fr; }
-            .answer-btn { font-size: 1.5rem; }
+            .play-button { font-size: 1.6rem; padding: 0.8rem 1.5rem; min-width: 120px; }
+            .timer { font-size: 2.5rem; }
+            .next-button { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
     <h1>🎵 УГАДАЙ МЕЛОДИЮ 🎶</h1>
 
-    <!-- Экран приветствия / кнопка старта -->
+    <!-- Экран приветствия -->
     <div id="startScreen" style="display: block; text-align: center;">
         <button class="big-button" id="startGameBtn">▶ НАЧАТЬ ИГРУ</button>
-        <div style="font-size: 1.5rem; color: #ccc; margin-top: 2rem;">Для людей старшего поколения<br>Крупно и контрастно</div>
+        <div style="font-size: 1.8rem; color: #ccc; margin-top: 2rem;">Слушайте отрывки без слов,<br>потом со словами</div>
     </div>
 
     <!-- Игровой экран (изначально скрыт) -->
     <div id="gameScreen" style="display: none; width: 100%; max-width: 1000px;">
         <div id="gameCard" class="game-card">
-            <div class="track-title" id="trackName">🎼 Сейчас играет: <span id="currentTrackIndexSpan">1</span>/<span id="totalTracksSpan"></span></div>
+            <div class="track-title" id="trackName">🎼 Трек <span id="currentTrackIndexSpan">1</span>/<span id="totalTracksSpan"></span></div>
 
             <!-- Плеер без слов (голосовое сообщение) -->
             <div class="voice-message">
                 <span class="voice-icon">🎤</span>
                 <button class="play-button" id="playWithoutBtn">▶ Без слов</button>
                 <div class="timer" id="timerDisplay">20</div>
-                <button class="hint-button" id="hintBtn" disabled>Подсказка со словами</button>
             </div>
 
-            <!-- Плеер со словами (появляется после подсказки) -->
-            <div id="withWordsContainer" style="display: none;" class="voice-message">
+            <!-- Плеер со словами -->
+            <div class="voice-message">
                 <span class="voice-icon">🎙️</span>
                 <button class="play-button" id="playWithBtn">▶ Со словами</button>
             </div>
 
-            <!-- Варианты ответов (появляются после подсказки или таймера) -->
-            <div id="answersContainer" style="display: none;">
-                <div class="answers-grid" id="answersGrid"></div>
-            </div>
-
-            <!-- Кнопка "Следующий трек" -->
-            <button class="next-button" id="nextTrackBtn" style="display: none;">⏩ СЛЕДУЮЩИЙ ТРЕК</button>
+            <!-- Кнопка следующего трека (всегда видна) -->
+            <button class="next-button" id="nextTrackBtn">⏩ СЛЕДУЮЩИЙ ТРЕК</button>
         </div>
-
-        <!-- Счет -->
-        <div class="score-board" id="scoreBoard">Счёт: 0 / 0</div>
     </div>
 
-    <!-- Итоговый экран -->
+    <!-- Конец игры (просто показывает итог, но можно и без очков) -->
     <div id="finalScreen" style="display: none; text-align: center;">
         <div class="game-card">
-            <div class="track-title" style="font-size: 3rem;">🏆 ИТОГ 🏆</div>
-            <div style="font-size: 4rem; color: #FFD700; margin: 2rem 0;" id="finalScoreDisplay">0 из 0</div>
+            <div class="track-title" style="font-size: 3rem;">🏆 ИГРА ОКОНЧЕНА 🏆</div>
+            <div style="font-size: 2.5rem; color: #FFD700; margin: 2rem 0;">Вы прослушали все треки!</div>
             <button class="big-button" id="playAgainBtn">🔄 Сыграть ещё</button>
         </div>
     </div>
 
     <script>
         (function() {
-            // -------- Данные песен (файлы должны лежать в папках music/ и music-full/) --------
+            // -------- Данные песен (файлы в music/ и music-full/) --------
             const tracks = [
                 { 
                     name: "Подмосковные вечера", 
@@ -349,26 +273,17 @@
             const totalTracksSpan = document.getElementById('totalTracksSpan');
             const playWithoutBtn = document.getElementById('playWithoutBtn');
             const timerDisplay = document.getElementById('timerDisplay');
-            const hintBtn = document.getElementById('hintBtn');
-            const withWordsContainer = document.getElementById('withWordsContainer');
             const playWithBtn = document.getElementById('playWithBtn');
-            const answersContainer = document.getElementById('answersContainer');
-            const answersGrid = document.getElementById('answersGrid');
             const nextTrackBtn = document.getElementById('nextTrackBtn');
-            const scoreBoard = document.getElementById('scoreBoard');
-            const finalScoreDisplay = document.getElementById('finalScoreDisplay');
 
-            // Переменные состояния игры
+            // Переменные состояния
             let currentTrackIndex = 0;           // индекс текущего трека (0-based)
-            let score = 0;                        // правильных ответов
             let timerInterval = null;
             let secondsLeft = 20;
-            let hintUsed = false;                  // была ли использована подсказка для текущего трека
-            let answered = false;                   // был ли уже дан ответ на текущий трек
-            let withoutAudio = null;                 // аудиоэлемент для "без слов"
-            let withAudio = null;                    // аудиоэлемент для "со словами"
+            let withoutAudio = null;              // аудио для "без слов"
+            let withAudio = null;                  // аудио для "со словами"
+            let isWithoutPlaying = false;          // флаг для отслеживания воспроизведения без слов (не обязателен, но пригодится)
 
-            // Инициализация количества треков
             totalTracksSpan.textContent = tracks.length;
 
             // ---------- Вспомогательные функции ----------
@@ -385,7 +300,6 @@
                 timerDisplay.textContent = secondsLeft;
             }
 
-            // Запуск таймера (вызывается при старте проигрывания без слов)
             function startTimer() {
                 if (timerInterval) return;
                 timerInterval = setInterval(() => {
@@ -394,197 +308,93 @@
                     if (secondsLeft <= 0) {
                         stopTimer();
                         timerDisplay.textContent = "0";
-                        // Автоматически показываем подсказку (если ещё не использована и не дан ответ)
-                        if (!hintUsed && !answered) {
-                            showHint();
-                        }
                     }
                 }, 1000);
             }
 
-            // Показать подсказку (плеер со словами и варианты ответов)
-            function showHint() {
-                if (hintUsed || answered) return;
-                hintUsed = true;
-                hintBtn.disabled = true;
-                stopTimer(); // таймер больше не нужен
-                // Показываем контейнер со словами
-                withWordsContainer.style.display = 'flex';
-                // Показываем варианты ответов
-                answersContainer.style.display = 'block';
-                generateAnswerButtons();
-                // Если подсказка вызвана досрочно, можно сразу активировать плеер со словами (но не включать автоматически)
-            }
-
-            // Генерация кнопок ответов (4 варианта, один правильный)
-            function generateAnswerButtons() {
-                answersGrid.innerHTML = ''; // очистка
-                const correctName = tracks[currentTrackIndex].name;
-                // Собираем все названия (без повторов)
-                const allNames = tracks.map(t => t.name);
-                // Перемешиваем и берём 3 неправильных + правильный
-                const otherNames = allNames.filter(n => n !== correctName);
-                // Перемешать
-                const shuffledOthers = otherNames.sort(() => Math.random() - 0.5).slice(0, 3);
-                const options = [correctName, ...shuffledOthers];
-                // Перемешать варианты
-                for (let i = options.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [options[i], options[j]] = [options[j], options[i]];
-                }
-
-                options.forEach(opt => {
-                    const btn = document.createElement('button');
-                    btn.className = 'answer-btn';
-                    btn.textContent = opt;
-                    btn.addEventListener('click', () => handleAnswer(opt, correctName, btn));
-                    answersGrid.appendChild(btn);
-                });
-            }
-
-            // Обработка ответа
-            function handleAnswer(selected, correct, btn) {
-                if (answered) return; // уже ответили
-                answered = true;
-                // Деактивируем все кнопки ответов
-                document.querySelectorAll('.answer-btn').forEach(b => b.disabled = true);
-                // Подсвечиваем правильный и неправильный
-                if (selected === correct) {
-                    btn.classList.add('correct-guess');
-                    // Начисляем балл только если подсказка НЕ использована
-                    if (!hintUsed) {
-                        score++;
-                    }
-                } else {
-                    btn.classList.add('wrong-guess');
-                    // Найти правильный и подсветить
-                    document.querySelectorAll('.answer-btn').forEach(b => {
-                        if (b.textContent === correct) b.classList.add('correct-guess');
-                    });
-                }
-                // Обновляем счёт на экране
-                updateScore();
-
-                // Показываем кнопку "Следующий трек"
-                nextTrackBtn.style.display = 'block';
-            }
-
-            // Обновление счёта
-            function updateScore() {
-                scoreBoard.textContent = `Счёт: ${score} / ${tracks.length}`;
-            }
-
-            // Загрузка следующего трека
-            function loadNextTrack() {
-                // Очистить предыдущие аудио
+            // Остановить все аудио
+            function stopAllAudio() {
                 if (withoutAudio) {
                     withoutAudio.pause();
-                    withoutAudio = null;
+                    withoutAudio.currentTime = 0;
                 }
                 if (withAudio) {
                     withAudio.pause();
-                    withAudio = null;
+                    withAudio.currentTime = 0;
                 }
-
-                currentTrackIndex++;
-                if (currentTrackIndex >= tracks.length) {
-                    // Игра окончена
-                    endGame();
-                    return;
-                }
-                resetForNewTrack();
-                trackIndexSpan.textContent = currentTrackIndex + 1;
             }
 
-            // Сброс состояния для нового трека
-            function resetForNewTrack() {
+            // Загрузить трек по индексу
+            function loadTrack(index) {
+                // Очистить предыдущие аудио и таймер
+                stopAllAudio();
                 stopTimer();
                 resetTimer();
-                hintUsed = false;
-                answered = false;
-                hintBtn.disabled = false; // включаем кнопку подсказки
-                withWordsContainer.style.display = 'none';
-                answersContainer.style.display = 'none';
-                nextTrackBtn.style.display = 'none';
-                // Очистить варианты ответов
-                answersGrid.innerHTML = '';
-                // Сброс кнопки play (визуально не меняем, но функционально аудио будет новое)
-                // Сброс плееров (удалить старые аудиоэлементы)
-                // Пересоздадим аудио при следующем нажатии
+
+                // Создаём новые аудиоэлементы (или переиспользуем, но проще создать новые)
+                withoutAudio = new Audio(tracks[index].without);
+                withAudio = new Audio(tracks[index].with);
+
+                // Обработка ошибок загрузки (не критично)
+                withoutAudio.onerror = () => console.warn('Ошибка загрузки:', tracks[index].without);
+                withAudio.onerror = () => console.warn('Ошибка загрузки:', tracks[index].with);
+
+                // Обновляем номер трека в заголовке
+                trackIndexSpan.textContent = index + 1;
             }
 
-            // Завершение игры, показ финального счёта
-            function endGame() {
-                gameScreen.style.display = 'none';
-                finalScreen.style.display = 'block';
-                finalScoreDisplay.textContent = `${score} из ${tracks.length}`;
+            // Переход к следующему треку
+            function nextTrack() {
+                if (currentTrackIndex + 1 < tracks.length) {
+                    currentTrackIndex++;
+                    loadTrack(currentTrackIndex);
+                } else {
+                    // Игра окончена
+                    gameScreen.style.display = 'none';
+                    finalScreen.style.display = 'block';
+                }
             }
 
             // Начать игру заново
             function restartGame() {
                 currentTrackIndex = 0;
-                score = 0;
-                updateScore();
-                trackIndexSpan.textContent = '1';
-                resetForNewTrack();
+                loadTrack(0);
                 startScreen.style.display = 'none';
                 gameScreen.style.display = 'block';
                 finalScreen.style.display = 'none';
             }
 
             // ---------- Обработчики событий ----------
-            startBtn.addEventListener('click', () => {
-                restartGame();
-            });
-
-            playAgainBtn.addEventListener('click', () => {
-                restartGame();
-            });
+            startBtn.addEventListener('click', restartGame);
+            playAgainBtn.addEventListener('click', restartGame);
 
             // Кнопка "Без слов" – проигрывание отрывка и запуск таймера
             playWithoutBtn.addEventListener('click', () => {
-                if (answered) return; // если уже ответили, не запускаем
-                // Если аудио ещё нет, создаём
-                if (!withoutAudio) {
-                    withoutAudio = new Audio(tracks[currentTrackIndex].without);
-                    withoutAudio.addEventListener('ended', () => {
-                        // можно ничего не делать
-                    });
-                }
-                // Запускаем воспроизведение (если уже играет, перезапускаем)
+                if (!withoutAudio) return; // на всякий случай
+                // Если уже играет – можно перезапустить
                 withoutAudio.currentTime = 0;
                 withoutAudio.play().catch(e => {
-                    alert('Не удалось воспроизвести аудио. Проверьте путь к файлу: ' + tracks[currentTrackIndex].without);
+                    alert('Не удалось воспроизвести аудио. Проверьте путь: ' + tracks[currentTrackIndex].without);
                 });
-                // Запускаем таймер (если ещё не запущен)
-                if (!timerInterval && !hintUsed && !answered) {
-                    startTimer();
-                }
+                // Запускаем таймер (если ещё не запущен или если хочешь перезапускать таймер при каждом нажатии)
+                stopTimer();
+                resetTimer();
+                startTimer();
             });
 
-            // Кнопка подсказки
-            hintBtn.addEventListener('click', () => {
-                if (answered || hintUsed) return;
-                showHint();
-            });
-
-            // Кнопка "Со словами" – проигрывание отрывка со словами
+            // Кнопка "Со словами" – просто играет
             playWithBtn.addEventListener('click', () => {
-                if (!withAudio) {
-                    withAudio = new Audio(tracks[currentTrackIndex].with);
-                }
+                if (!withAudio) return;
                 withAudio.currentTime = 0;
                 withAudio.play().catch(e => {
-                    alert('Не удалось воспроизвести аудио. Проверьте путь к файлу: ' + tracks[currentTrackIndex].with);
+                    alert('Не удалось воспроизвести аудио. Проверьте путь: ' + tracks[currentTrackIndex].with);
                 });
             });
 
             // Кнопка "Следующий трек"
-            nextTrackBtn.addEventListener('click', () => {
-                loadNextTrack();
-            });
+            nextTrackBtn.addEventListener('click', nextTrack);
 
-            // Инициализация (скрываем игровой экран, показываем стартовый)
+            // Инициализация: скрываем игровой экран, показываем стартовый
             startScreen.style.display = 'block';
             gameScreen.style.display = 'none';
             finalScreen.style.display = 'none';
