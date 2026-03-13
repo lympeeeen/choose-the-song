@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Угадай мелодию</title>
+    <title>Угадай мелодию · Дореволюционный стиль</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
+        /* Стили без изменений */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -241,7 +242,7 @@
             // Переменные состояния
             let currentTrackIndex = 0;           // 0-based индекс
             let timerInterval = null;
-            let secondsLeft = 20;
+            let secondsLeft = 30;                 // изменено с 20 на 30
             let withoutAudio = null;              // аудио для "без слов"
             let withAudio = null;                  // аудио для "со словами"
             let withoutPlaying = false;            // флаг, играет ли без слов
@@ -259,7 +260,7 @@
 
             function resetTimer() {
                 stopTimer();
-                secondsLeft = 20;
+                secondsLeft = 30;                   // изменено с 20 на 30
                 timerDisplay.textContent = secondsLeft;
             }
 
