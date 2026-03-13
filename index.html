@@ -90,6 +90,7 @@
             border: 3px solid #FFD700;
             margin-bottom: 2rem;
             box-shadow: inset 0 0 15px rgba(255,215,0,0.3);
+            flex-wrap: wrap;
         }
 
         .voice-icon {
@@ -101,7 +102,7 @@
             background: #FFD700;
             border: none;
             border-radius: 50px;
-            padding: 1rem 2.5rem;
+            padding: 1rem 2rem;
             font-size: 2rem;
             font-weight: 700;
             color: #0a0f1e;
@@ -110,6 +111,10 @@
             transition: 0.2s;
             border: 2px solid white;
             min-width: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .play-button:hover {
@@ -167,9 +172,9 @@
             .big-button { font-size: 1.5rem; padding: 15px 30px; }
             .game-card { padding: 1.5rem; }
             .track-title { font-size: 1.8rem; }
-            .voice-message { flex-wrap: wrap; justify-content: center; }
-            .play-button { font-size: 1.6rem; padding: 0.8rem 1.5rem; min-width: 120px; }
-            .timer { font-size: 2.5rem; }
+            .voice-message { flex-direction: column; align-items: stretch; }
+            .play-button { width: 100%; }
+            .timer { margin-left: 0; text-align: center; }
             .next-button { font-size: 1.8rem; }
         }
     </style>
@@ -239,7 +244,8 @@
             let secondsLeft = 20;
             let withoutAudio = null;              // аудио для "без слов"
             let withAudio = null;                  // аудио для "со словами"
-            let isWithoutPlaying = false;          // флаг для отслеживания воспроизведения
+            let withoutPlaying = false;            // флаг, играет ли без слов
+            let withPlaying = false;               // флаг, играет ли со словами
 
             totalTracksSpan.textContent = TOTAL_TRACKS;
 
@@ -274,10 +280,14 @@
                 if (withoutAudio) {
                     withoutAudio.pause();
                     withoutAudio.currentTime = 0;
+                    withoutPlaying = false;
+                    playWithoutBtn.innerHTML = '▶ Без слов';
                 }
                 if (withAudio) {
                     withAudio.pause();
                     withAudio.currentTime = 0;
+                    withPlaying = false;
+                    playWithBtn.innerHTML = '▶ Со словами';
                 }
             }
 
@@ -291,12 +301,78 @@
                 withoutAudio = new Audio(`music/${index+1}.mp3`);
                 withAudio = new Audio(`music-full/${index+1}.mp3`);
 
-                // Обработка ошибок загрузки (не критично, но предупредим)
+                // Обработка окончания воспроизведения для сброса кнопок
+                withoutAudio.addEventListener('ended', () => {
+                    withoutPlaying = false;
+                    playWithoutBtn.innerHTML = '▶ Без слов';
+                });
+                withAudio.addEventListener('ended', () => {
+                    withPlaying = false;
+                    playWithBtn.innerHTML = '▶ Со словами';
+                });
+
+                // Обработка ошибок загрузки
                 withoutAudio.onerror = () => console.warn(`Ошибка загрузки music/${index+1}.mp3`);
                 withAudio.onerror = () => console.warn(`Ошибка загрузки music-full/${index+1}.mp3`);
 
                 // Обновляем номер трека в заголовке
                 trackIndexSpan.textContent = index + 1;
+            }
+
+            // Управление воспроизведением без слов
+            function toggleWithout() {
+                if (!withoutAudio) return;
+
+                if (withoutPlaying) {
+                    // Поставить на паузу
+                    withoutAudio.pause();
+                    withoutPlaying = false;
+                    playWithoutBtn.innerHTML = '▶ Без слов';
+                } else {
+                    // Начать воспроизведение (если на паузе, продолжим, если остановлен - с начала)
+                    if (withoutAudio.paused) {
+                        // Если аудио не в начале и на паузе, просто возобновляем
+                        withoutAudio.play().catch(e => {
+                            alert(`Не удалось воспроизвести music/${currentTrackIndex+1}.mp3. Проверьте наличие файла.`);
+                        });
+                    } else {
+                        // Если остановлено (currentTime=0), начинаем заново
+                        withoutAudio.currentTime = 0;
+                        withoutAudio.play().catch(e => {
+                            alert(`Не удалось воспроизвести music/${currentTrackIndex+1}.mp3. Проверьте наличие файла.`);
+                        });
+                    }
+                    withoutPlaying = true;
+                    playWithoutBtn.innerHTML = '⏸ Без слов';
+                    // Запускаем таймер (если не запущен)
+                    if (!timerInterval) {
+                        startTimer();
+                    }
+                }
+            }
+
+            // Управление воспроизведением со словами
+            function toggleWith() {
+                if (!withAudio) return;
+
+                if (withPlaying) {
+                    withAudio.pause();
+                    withPlaying = false;
+                    playWithBtn.innerHTML = '▶ Со словами';
+                } else {
+                    if (withAudio.paused) {
+                        withAudio.play().catch(e => {
+                            alert(`Не удалось воспроизвести music-full/${currentTrackIndex+1}.mp3. Проверьте наличие файла.`);
+                        });
+                    } else {
+                        withAudio.currentTime = 0;
+                        withAudio.play().catch(e => {
+                            alert(`Не удалось воспроизвести music-full/${currentTrackIndex+1}.mp3. Проверьте наличие файла.`);
+                        });
+                    }
+                    withPlaying = true;
+                    playWithBtn.innerHTML = '⏸ Со словами';
+                }
             }
 
             // Переход к следующему треку
@@ -324,28 +400,8 @@
             startBtn.addEventListener('click', restartGame);
             playAgainBtn.addEventListener('click', restartGame);
 
-            // Кнопка "Без слов" – проигрывание отрывка и запуск таймера
-            playWithoutBtn.addEventListener('click', () => {
-                if (!withoutAudio) return;
-                // Если уже играет – перезапускаем
-                withoutAudio.currentTime = 0;
-                withoutAudio.play().catch(e => {
-                    alert(`Не удалось воспроизвести music/${currentTrackIndex+1}.mp3. Проверьте наличие файла.`);
-                });
-                // Запускаем таймер (перезапускаем, если уже тикал)
-                stopTimer();
-                resetTimer();
-                startTimer();
-            });
-
-            // Кнопка "Со словами" – просто играет
-            playWithBtn.addEventListener('click', () => {
-                if (!withAudio) return;
-                withAudio.currentTime = 0;
-                withAudio.play().catch(e => {
-                    alert(`Не удалось воспроизвести music-full/${currentTrackIndex+1}.mp3. Проверьте наличие файла.`);
-                });
-            });
+            playWithoutBtn.addEventListener('click', toggleWithout);
+            playWithBtn.addEventListener('click', toggleWith);
 
             // Кнопка "Следующий трек"
             nextTrackBtn.addEventListener('click', nextTrack);
