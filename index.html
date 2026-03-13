@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Угадай мелодию · Голосовые сообщения</title>
-    <!-- Читаемый шрифт -->
+    <title>Угадай мелодию · Дореволюционный стиль</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -37,7 +36,6 @@
             text-transform: uppercase;
         }
 
-        /* Кнопка старта / повторной игры */
         .big-button {
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
@@ -62,13 +60,6 @@
             box-shadow: 0 0 30px #FFA500, 0 0 60px #FF4500;
         }
 
-        .big-button:disabled {
-            opacity: 0.5;
-            pointer-events: none;
-            filter: grayscale(0.6);
-        }
-
-        /* Карточка трека */
         .game-card {
             width: 100%;
             max-width: 950px;
@@ -89,7 +80,6 @@
             text-shadow: 0 0 8px orange;
         }
 
-        /* Стиль голосового сообщения (Telegram-стиль) */
         .voice-message {
             background: #2a2f40;
             border-radius: 60px;
@@ -145,7 +135,6 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* Кнопка следующего трека */
         .next-button {
             background: #FFD700;
             border: none;
@@ -173,7 +162,6 @@
             font-size: 1.2rem;
         }
 
-        /* Адаптация под мобильные, но шрифты остаются крупными */
         @media (max-width: 700px) {
             h1 { font-size: 2.5rem; }
             .big-button { font-size: 1.5rem; padding: 15px 30px; }
@@ -195,12 +183,12 @@
         <div style="font-size: 1.8rem; color: #ccc; margin-top: 2rem;">Слушайте отрывки без слов,<br>потом со словами</div>
     </div>
 
-    <!-- Игровой экран (изначально скрыт) -->
+    <!-- Игровой экран -->
     <div id="gameScreen" style="display: none; width: 100%; max-width: 1000px;">
         <div id="gameCard" class="game-card">
             <div class="track-title" id="trackName">🎼 Трек <span id="currentTrackIndexSpan">1</span>/<span id="totalTracksSpan"></span></div>
 
-            <!-- Плеер без слов (голосовое сообщение) -->
+            <!-- Плеер без слов -->
             <div class="voice-message">
                 <span class="voice-icon">🎤</span>
                 <button class="play-button" id="playWithoutBtn">▶ Без слов</button>
@@ -213,12 +201,12 @@
                 <button class="play-button" id="playWithBtn">▶ Со словами</button>
             </div>
 
-            <!-- Кнопка следующего трека (всегда видна) -->
+            <!-- Кнопка следующего трека -->
             <button class="next-button" id="nextTrackBtn">⏩ СЛЕДУЮЩИЙ ТРЕК</button>
         </div>
     </div>
 
-    <!-- Конец игры (просто показывает итог, но можно и без очков) -->
+    <!-- Экран окончания игры -->
     <div id="finalScreen" style="display: none; text-align: center;">
         <div class="game-card">
             <div class="track-title" style="font-size: 3rem;">🏆 ИГРА ОКОНЧЕНА 🏆</div>
@@ -229,39 +217,8 @@
 
     <script>
         (function() {
-            // -------- Данные песен (файлы в music/ и music-full/) --------
-            const tracks = [
-                { 
-                    name: "Подмосковные вечера", 
-                    without: "music/evenings.mp3",    // замените на реальные имена файлов
-                    with: "music-full/evenings_full.mp3" 
-                },
-                { 
-                    name: "Катюша", 
-                    without: "music/katiusha.mp3", 
-                    with: "music-full/katiusha_full.mp3" 
-                },
-                { 
-                    name: "Смуглянка", 
-                    without: "music/smuglyanka.mp3", 
-                    with: "music-full/smuglyanka_full.mp3" 
-                },
-                { 
-                    name: "Ой, цветет калина", 
-                    without: "music/kalina.mp3", 
-                    with: "music-full/kalina_full.mp3" 
-                },
-                { 
-                    name: "День Победы", 
-                    without: "music/denpobedy.mp3", 
-                    with: "music-full/denpobedy_full.mp3" 
-                },
-                { 
-                    name: "Калинка", 
-                    without: "music/kalinka.mp3", 
-                    with: "music-full/kalinka_full.mp3" 
-                }
-            ];
+            // -------- НАСТРОЙКИ --------
+            const TOTAL_TRACKS = 10; // сколько песен в папках (1.mp3 ... 10.mp3)
 
             // Элементы интерфейса
             const startScreen = document.getElementById('startScreen');
@@ -277,14 +234,14 @@
             const nextTrackBtn = document.getElementById('nextTrackBtn');
 
             // Переменные состояния
-            let currentTrackIndex = 0;           // индекс текущего трека (0-based)
+            let currentTrackIndex = 0;           // 0-based индекс
             let timerInterval = null;
             let secondsLeft = 20;
             let withoutAudio = null;              // аудио для "без слов"
             let withAudio = null;                  // аудио для "со словами"
-            let isWithoutPlaying = false;          // флаг для отслеживания воспроизведения без слов (не обязателен, но пригодится)
+            let isWithoutPlaying = false;          // флаг для отслеживания воспроизведения
 
-            totalTracksSpan.textContent = tracks.length;
+            totalTracksSpan.textContent = TOTAL_TRACKS;
 
             // ---------- Вспомогательные функции ----------
             function stopTimer() {
@@ -324,20 +281,19 @@
                 }
             }
 
-            // Загрузить трек по индексу
+            // Загрузить трек по индексу (0-based)
             function loadTrack(index) {
-                // Очистить предыдущие аудио и таймер
                 stopAllAudio();
                 stopTimer();
                 resetTimer();
 
-                // Создаём новые аудиоэлементы (или переиспользуем, но проще создать новые)
-                withoutAudio = new Audio(tracks[index].without);
-                withAudio = new Audio(tracks[index].with);
+                // Создаём аудиоэлементы с путями music/(index+1).mp3 и music-full/(index+1).mp3
+                withoutAudio = new Audio(`music/${index+1}.mp3`);
+                withAudio = new Audio(`music-full/${index+1}.mp3`);
 
-                // Обработка ошибок загрузки (не критично)
-                withoutAudio.onerror = () => console.warn('Ошибка загрузки:', tracks[index].without);
-                withAudio.onerror = () => console.warn('Ошибка загрузки:', tracks[index].with);
+                // Обработка ошибок загрузки (не критично, но предупредим)
+                withoutAudio.onerror = () => console.warn(`Ошибка загрузки music/${index+1}.mp3`);
+                withAudio.onerror = () => console.warn(`Ошибка загрузки music-full/${index+1}.mp3`);
 
                 // Обновляем номер трека в заголовке
                 trackIndexSpan.textContent = index + 1;
@@ -345,7 +301,7 @@
 
             // Переход к следующему треку
             function nextTrack() {
-                if (currentTrackIndex + 1 < tracks.length) {
+                if (currentTrackIndex + 1 < TOTAL_TRACKS) {
                     currentTrackIndex++;
                     loadTrack(currentTrackIndex);
                 } else {
@@ -370,13 +326,13 @@
 
             // Кнопка "Без слов" – проигрывание отрывка и запуск таймера
             playWithoutBtn.addEventListener('click', () => {
-                if (!withoutAudio) return; // на всякий случай
-                // Если уже играет – можно перезапустить
+                if (!withoutAudio) return;
+                // Если уже играет – перезапускаем
                 withoutAudio.currentTime = 0;
                 withoutAudio.play().catch(e => {
-                    alert('Не удалось воспроизвести аудио. Проверьте путь: ' + tracks[currentTrackIndex].without);
+                    alert(`Не удалось воспроизвести music/${currentTrackIndex+1}.mp3. Проверьте наличие файла.`);
                 });
-                // Запускаем таймер (если ещё не запущен или если хочешь перезапускать таймер при каждом нажатии)
+                // Запускаем таймер (перезапускаем, если уже тикал)
                 stopTimer();
                 resetTimer();
                 startTimer();
@@ -387,7 +343,7 @@
                 if (!withAudio) return;
                 withAudio.currentTime = 0;
                 withAudio.play().catch(e => {
-                    alert('Не удалось воспроизвести аудио. Проверьте путь: ' + tracks[currentTrackIndex].with);
+                    alert(`Не удалось воспроизвести music-full/${currentTrackIndex+1}.mp3. Проверьте наличие файла.`);
                 });
             });
 
